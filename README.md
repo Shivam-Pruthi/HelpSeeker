@@ -1,5 +1,5 @@
-## HelpSeeker
-# An Application for the safety purpose of Women!
+# HelpSeeker
+## An Application for the safety purpose of Women!
 • Help seeker, as the name suggests, is an algorithm which if we look in the long run can be used significantly for helping people or specifically women, who inevitably get into trouble and needs help instantly. As if looked into the society we live in, we’ll see how crucial it is for us to do something in the matter of women safety, with an exponential increase in number of rape cases and other horrendous deeds, we felt the urge to do something that is different from the monotony in this subject.
 
 • Our purpose with this is to design such an algorithm which considers the data of nearby people, as in the people close to the victim and selects particularly 5 people in order to send them a SOS message or a signal.
