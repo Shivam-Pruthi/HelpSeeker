@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <math.h>
+
+typedef struct {
+        const char * name;
+        int rating;
+        long double  distance,lt, lg;
+} item_t;
+ 
+item_t item[] = {
+        {"Varun", 2.2, 0, 6.24478548, -75.57050110},
+        {"Prince",3, 0,  7.06125013, -73.84928550},
+        {"Neha", 1, 0, 7.88475514, -72.49432589},
+        {"Nikhil",4, 0, 3.48835279, -76.51532198},
+        {"Raag",3.0, 0, 4.66455174, -74.07867091},
+        {"Raftaar", 2.7, 0, 4.13510880, -73.63690401},
+        {"Baseer", 2, 0, 6.55526689, -73.13373892},
+        {"Shivam", 2.5, 0, 5.777658753, -75.87593699},
+        {"Sarthak", 3.6, 0, 6.63897093, -73.76962983},
+        {"Vishi", 1.8, 0, 4.85923693, -72.8762986},
+        {"Raghav", 4.2, 0, 7.76982682, -75.56872796},
+        {"Saksham", 3.6, 0, 5.4857686978, -75.54765865},
+        {"Shubh", 2.6, 0, 6.8237637216, -77.852136786},
+        {"Tanvi", 4.8, 0, 7.76239239, -74.762376233},
+        {"Akasa", 5.0, 0, 20.56823763, 3.69832983},
+        {"Swati", 2.0, 0, 5.85238732, -75.283768327},
+        {"Ananya", 4.7, 0, 8.23587639, -76.21853827},
+        {"Luv", 1.2, 0, 4.85287323, -72.23778636},
+        {"Samar", 3.1, 0, 4.1351438764, -76.51532198},
+        {"Nanki", 2.3, 0, 6.77873268, -75.376873269},
+};
+ 
+#define n_items (sizeof(item)/sizeof(item_t))
+ 
+typedef struct {
+        uint64_t bits; 
+        int rating;
+} solution;
+
+typedef struct {
+	const char * name;
+    int ratings;
+}persons;
+
+persons num[n_items];
+
+void swap(persons* xp, persons* yp) 
+{ 
+    persons temp = *xp; 
+    *xp = *yp; 
+    *yp = temp; 
+} 
+
+void selectionSort( int n) 
+{ 
+    int i, j, min_idx;  
+    for (i = 0; i < n - 1; i++) 
+	{ 
+        min_idx = i; 
+        for (j = i + 1; j < n; j++) 
+            if (num[j].ratings > num[min_idx].ratings) 
+                min_idx = j; 
+        swap(&num[min_idx], &num[i]); 
+    } 
+} 
+
+
+long double toRadians(const long double degree) 
+{
+    long double one_deg = (M_PI) / 180; 
+    
+    return (one_deg * degree); 
+} 
+  
+long double Distance(long double lat1, long double long1,  
+                     long double lat2, long double long2) 
+{ 
+    lat1 = toRadians(lat1); 
+    long1 = toRadians(long1); 
+    lat2 = toRadians(lat2); 
+    long2 = toRadians(long2); 
+    long double dlong = long2 - long1; 
+    long double dlat = lat2 - lat1; 
+  
+    long double ans = pow(sin(dlat / 2), 2) +  
+                          cos(lat1) * cos(lat2) *  
+                          pow(sin(dlong / 2), 2); 
+  
+    ans = 2 * asin(sqrt(ans)); 
+    long double R = 6371; 
+    ans = ans * R; 
+  
+    return ans; 
+}
+ 
+ 
+void optimal(long double distance, int idx, solution *s)
+{
+        solution v1, v2;
+        if (idx < 0) 
+		{
+                s->bits = s->rating = 0;
+                return;
+        }
+ 
+        if (distance < item[idx].distance) 
+		{
+                optimal(distance, idx - 1, s);
+                return;
+          }
+ 
+        optimal(distance, idx - 1, &v1);
+        optimal(distance, idx - 1, &v2);
+ 
+        v2.rating += item[idx].rating;
+        v2.bits |= (1 << idx);
+ 
+        *s = (v1.rating >= v2.rating) ? v1 : v2;
+}
+void distancecal(int lat, int lon)
+{ 
+      for(int j=0; j<n_items; j++)
+           item[j].distance=Distance(lat, lon, item[j].lt, item[j].lg)*1000;
+}
+   
+  
+ 
+int main(void)
+{
+        int i = 0, w = 0, j=0, n;
+        long double lt1, lg1, sum=0, avg;
+        char choice= 'y';
+        while(choice=='y')
+         { 
+            scanf("%0.15Lf %0.15Lf", &lt1, &lg1);
+            distancecal(lt1, lg1);
+            scanf("%c", &choice);
+         }
+
+        for(int k=0; k<n_items; k++)
+         {
+          sum+= item[k].distance;
+          avg=sum/n_items;
+         }
+
+            
+
+        solution s = {0, 0};
+        optimal(avg, n_items - 1, &s);
+ 
+        for (i = 0; i < n_items; i++) 
+		{
+                if (s.bits & (1 << i)) 
+				{
+                	num[j].name=item[i].name;
+                	num[j].ratings=item[i].rating;
+                	j++;
+                }
+        }
+        selectionSort(n_items);
+        n=(sizeof(num)/sizeof(persons));
+        for(int k=0; k<n; k++ )
+		    printf("%s\n", num[k].name);
+}
